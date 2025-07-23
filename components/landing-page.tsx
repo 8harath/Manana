@@ -11,7 +11,7 @@ export function LandingPage() {
       <header className="h-20 border-b border-light bg-white/80 backdrop-blur-sm sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex items-center justify-between">
           <div className="flex items-center space-x-2">
-            <FileText className="h-8 w-8 text-[var(--accent-blue)]" />
+            <FileText className="h-8 w-8 text-[var(--accent-blue)]" aria-hidden="true" />
             <span className="text-xl font-semibold">PDF Chat</span>
           </div>
           <nav className="hidden md:flex items-center space-x-8">
@@ -62,7 +62,7 @@ export function LandingPage() {
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             <div className="card text-center group hover:-translate-y-1">
               <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:bg-blue-200 transition-colors">
-                <MessageSquare className="h-6 w-6 text-accent-blue" />
+                <MessageSquare className="h-6 w-6 text-accent-blue" aria-hidden="true" />
               </div>
               <h3 className="text-xl font-semibold mb-3">Natural Conversations</h3>
               <p className="text-secondary leading-relaxed">
@@ -72,7 +72,7 @@ export function LandingPage() {
 
             <div className="card text-center group hover:-translate-y-1">
               <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:bg-green-200 transition-colors">
-                <Shield className="h-6 w-6 text-success-green" />
+                <Shield className="h-6 w-6 text-success-green" aria-hidden="true" />
               </div>
               <h3 className="text-xl font-semibold mb-3">Secure & Private</h3>
               <p className="text-secondary leading-relaxed">
@@ -82,7 +82,7 @@ export function LandingPage() {
 
             <div className="card text-center group hover:-translate-y-1">
               <div className="w-12 h-12 bg-orange-500/10 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:bg-orange-500/20 transition-colors">
-                <Zap className="h-6 w-6 text-orange-500" />
+                <Zap className="h-6 w-6 text-orange-500" aria-hidden="true" />
               </div>
               <h3 className="text-xl font-semibold mb-3">Lightning Fast</h3>
               <p className="text-secondary leading-relaxed">
@@ -142,7 +142,7 @@ export function LandingPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
-              <FileText className="h-6 w-6 text-[var(--accent-blue)]" />
+              <FileText className="h-6 w-6 text-[var(--accent-blue)]" aria-hidden="true" />
               <span className="font-semibold">PDF Chat</span>
             </div>
             <p className="text-sm text-secondary">© 2024 PDF Chat. Built with precision and care.</p>

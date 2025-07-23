@@ -12,6 +12,22 @@ const config: Config = {
   ],
   theme: {
   	extend: {
+      // 8-point grid system: use only these spacing values for margin, padding, gap, etc.
+      spacing: {
+        0: '0px',
+        1: '8px',
+        2: '16px',
+        3: '24px',
+        4: '32px',
+        5: '40px',
+        6: '48px',
+        7: '56px',
+        8: '64px',
+        9: '72px',
+        10: '80px',
+        11: '88px',
+        12: '96px',
+      },
   		colors: {
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',
