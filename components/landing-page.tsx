@@ -45,7 +45,7 @@ export function LandingPage() {
 
         {/* Background decoration */}
         <div className="absolute inset-0 -z-10 overflow-hidden">
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-to-r from-[var(--accent-blue)]/5 to-transparent rounded-full blur-3xl" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-to-r from-blue-50 to-transparent rounded-full blur-3xl" />
         </div>
       </section>
 
@@ -61,8 +61,8 @@ export function LandingPage() {
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             <div className="card text-center group hover:-translate-y-1">
-              <div className="w-12 h-12 bg-[var(--accent-blue)]/10 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:bg-[var(--accent-blue)]/20 transition-colors">
-                <MessageSquare className="h-6 w-6 text-[var(--accent-blue)]" />
+              <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:bg-blue-200 transition-colors">
+                <MessageSquare className="h-6 w-6 text-accent-blue" />
               </div>
               <h3 className="text-xl font-semibold mb-3">Natural Conversations</h3>
               <p className="text-secondary leading-relaxed">
@@ -71,8 +71,8 @@ export function LandingPage() {
             </div>
 
             <div className="card text-center group hover:-translate-y-1">
-              <div className="w-12 h-12 bg-[var(--success-green)]/10 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:bg-[var(--success-green)]/20 transition-colors">
-                <Shield className="h-6 w-6 text-[var(--success-green)]" />
+              <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:bg-green-200 transition-colors">
+                <Shield className="h-6 w-6 text-success-green" />
               </div>
               <h3 className="text-xl font-semibold mb-3">Secure & Private</h3>
               <p className="text-secondary leading-relaxed">

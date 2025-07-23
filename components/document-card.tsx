@@ -159,7 +159,7 @@ export function DocumentCard({ document }: DocumentCardProps) {
 
       {/* Chat Button Overlay */}
       {document.processingStatus === "ready" && (
-        <div className="absolute inset-0 bg-[var(--accent-blue)]/0 group-hover:bg-[var(--accent-blue)]/5 transition-colors rounded-xl flex items-center justify-center opacity-0 group-hover:opacity-100">
+        <div className="absolute inset-0 bg-transparent group-hover:bg-blue-50 transition-colors rounded-xl flex items-center justify-center opacity-0 group-hover:opacity-100">
           <Button className="btn-primary shadow-lg">
             <MessageSquare className="h-4 w-4 mr-2" />
             Start Chat
