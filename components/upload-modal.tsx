@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
 import { Upload, FileText, X, CheckCircle, AlertCircle } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
+import { UploadButton } from '@uploadthing/react';
 
 interface UploadModalProps {
   isOpen: boolean
@@ -131,105 +132,40 @@ export function UploadModal({ isOpen, onClose, onSuccess }: UploadModalProps) {
             <span>Upload PDF Document</span>
           </DialogTitle>
         </DialogHeader>
-
         <div className="space-y-6">
-          {/* Upload Area */}
-          {!selectedFile && uploadStatus === "idle" && (
-            <div
-              {...getRootProps()}
-              className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors ${
-                isDragActive
-                  ? "border-accent-blue bg-blue-50"
-                  : "border-light hover:border-blue-300"
-              }`}
-            >
-              <input {...getInputProps()} />
-              <Upload className="h-12 w-12 text-secondary mx-auto mb-4" />
-              <p className="text-lg font-medium mb-2">
-                {isDragActive ? "Drop your PDF here" : "Drag & drop your PDF here"}
-              </p>
-              <p className="text-secondary mb-4">or click to browse files</p>
-              <Button variant="outline" className="btn-secondary bg-transparent">
-                Browse Files
-              </Button>
-              <p className="text-xs text-secondary mt-4">Maximum file size: 10MB</p>
-            </div>
-          )}
-
-          {/* Selected File */}
-          {selectedFile && uploadStatus === "idle" && (
-            <div className="border border-light rounded-lg p-4">
-              <div className="flex items-center space-x-3">
-                <FileText className="h-10 w-10 text-[var(--accent-blue)]" />
-                <div className="flex-1 min-w-0">
-                  <p className="font-medium truncate">{selectedFile.name}</p>
-                  <p className="text-sm text-secondary">{formatFileSize(selectedFile.size)}</p>
-                </div>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setSelectedFile(null)}
-                  className="text-secondary hover:text-[var(--error-red)]"
-                >
-                  <X className="h-4 w-4" />
-                </Button>
-              </div>
-            </div>
-          )}
-
-          {/* Upload Progress */}
-          {uploadStatus === "uploading" && (
-            <div className="space-y-4">
-              <div className="flex items-center space-x-3">
-                <FileText className="h-10 w-10 text-[var(--accent-blue)]" />
-                <div className="flex-1 min-w-0">
-                  <p className="font-medium truncate">{selectedFile?.name}</p>
-                  <p className="text-sm text-secondary">Uploading...</p>
-                </div>
-              </div>
-              <Progress value={uploadProgress} className="w-full" />
-            </div>
-          )}
-
-          {/* Success State */}
-          {uploadStatus === "success" && (
-            <div className="text-center py-4">
-              <CheckCircle className="h-16 w-16 text-[var(--success-green)] mx-auto mb-4" />
-              <h3 className="text-lg font-semibold mb-2">Upload Successful!</h3>
-              <p className="text-secondary">Your document is being processed...</p>
-            </div>
-          )}
-
-          {/* Error State */}
-          {uploadStatus === "error" && (
-            <div className="text-center py-4">
-              <AlertCircle className="h-16 w-16 text-[var(--error-red)] mx-auto mb-4" />
-              <h3 className="text-lg font-semibold mb-2">Upload Failed</h3>
-              <p className="text-secondary mb-4">Please try again</p>
-              <Button
-                onClick={() => {
-                  setUploadStatus("idle")
-                  setSelectedFile(null)
-                }}
-              >
-                Try Again
-              </Button>
-            </div>
-          )}
-
-          {/* Action Buttons */}
-          {selectedFile && uploadStatus === "idle" && (
-            <div className="flex space-x-3">
-              <Button variant="outline" onClick={handleClose} className="flex-1 bg-transparent">
-                Cancel
-              </Button>
-              <Button onClick={handleUpload} className="btn-primary flex-1">
-                Upload Document
-              </Button>
-            </div>
-          )}
+          <UploadButton
+            endpoint="pdfUploader"
+            onClientUploadComplete={() => {
+              toast({
+                title: 'Upload successful',
+                description: 'Your document is being processed and will be ready shortly.',
+              });
+              onSuccess();
+              handleClose();
+            }}
+            onUploadError={(error) => {
+              toast({
+                title: 'Upload failed',
+                description: error.message,
+                variant: 'destructive',
+              });
+            }}
+            appearance={{
+              button: 'btn-primary w-full',
+              container: 'w-full',
+              allowedContent: 'text-secondary',
+              label: 'text-lg font-medium',
+              uploadIcon: 'h-6 w-6',
+              progressBar: 'w-full',
+            }}
+            config={{
+              maxFileSize: 10 * 1024 * 1024,
+              accept: ['application/pdf'],
+              multiple: false,
+            }}
+          />
         </div>
       </DialogContent>
     </Dialog>
-  )
+  );
 }
