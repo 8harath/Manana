@@ -21,6 +21,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="h-full">
       <body className={`${inter.className} h-full antialiased`}>
+        <a href="#main-content" className="sr-only focus:not-sr-only absolute left-2 top-2 bg-white border border-light rounded px-3 py-2 z-50">Skip to main content</a>
         <AuthProvider>
           {children}
           <Toaster />

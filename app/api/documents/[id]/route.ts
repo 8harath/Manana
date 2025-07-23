@@ -42,3 +42,32 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
     await client.close()
   }
 }
+
+export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
+  try {
+    const session = await getServerSession(authOptions)
+    if (!session?.user?.email) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    }
+    const { tags } = await request.json()
+    if (!Array.isArray(tags)) {
+      return NextResponse.json({ error: "Invalid tags" }, { status: 400 })
+    }
+    await client.connect()
+    const db = client.db("pdf-chat")
+    const documents = db.collection("documents")
+    const result = await documents.updateOne(
+      { _id: new ObjectId(params.id), userEmail: session.user.email },
+      { $set: { tags } }
+    )
+    if (result.matchedCount === 0) {
+      return NextResponse.json({ error: "Document not found" }, { status: 404 })
+    }
+    return NextResponse.json({ success: true })
+  } catch (error) {
+    console.error("Error updating tags:", error)
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 })
+  } finally {
+    await client.close()
+  }
+}

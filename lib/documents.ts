@@ -18,6 +18,7 @@ export interface PDFDocument {
     pageCount?: number;
     [key: string]: any;
   };
+  tags?: string[]; // <-- Add this line for document tags
 }
 
 export interface ChatMessage {

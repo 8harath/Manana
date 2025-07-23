@@ -6,6 +6,7 @@ import { FileText, Calendar, Clock, MoreVertical, Trash2, MessageSquare } from "
 import { Button } from "@/components/ui/button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { formatDistanceToNow } from "date-fns"
+import Image from 'next/image'
 
 interface Document {
   _id: string
@@ -17,6 +18,7 @@ interface Document {
   metadata?: {
     pageCount: number
   }
+  tags?: string[]
 }
 
 interface DocumentCardProps {
@@ -26,6 +28,7 @@ interface DocumentCardProps {
 export function DocumentCard({ document }: DocumentCardProps) {
   const router = useRouter()
   const [isDeleting, setIsDeleting] = useState(false)
+  const [isEditingTags, setIsEditingTags] = useState(false)
 
   const handleChatClick = () => {
     if (document.processingStatus === "ready") {
@@ -47,6 +50,26 @@ export function DocumentCard({ document }: DocumentCardProps) {
         console.error("Error deleting document:", error)
       } finally {
         setIsDeleting(false)
+      }
+    }
+  }
+
+  const handleEditTags = async () => {
+    const currentTags = document.tags?.join(", ") || ""
+    const input = prompt("Edit tags (comma separated):", currentTags)
+    if (input !== null) {
+      const tags = input.split(",").map(t => t.trim()).filter(Boolean)
+      try {
+        const response = await fetch(`/api/documents/${document._id}/tags`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ tags }),
+        })
+        if (response.ok) {
+          window.location.reload()
+        }
+      } catch (error) {
+        alert("Failed to update tags.")
       }
     }
   }
@@ -121,6 +144,17 @@ export function DocumentCard({ document }: DocumentCardProps) {
         </div>
 
         <div className={`text-xs font-medium ${getStatusColor()}`}>{getStatusText()}</div>
+
+        {/* Tags Display */}
+        {document.tags && document.tags.length > 0 && (
+          <div className="flex flex-wrap gap-1 mt-1">
+            {document.tags.map((tag, idx) => (
+              <span key={idx} className="bg-blue-100 text-blue-700 rounded px-2 py-0.5 text-xs font-medium">
+                {tag}
+              </span>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Actions Menu */}
@@ -141,6 +175,14 @@ export function DocumentCard({ document }: DocumentCardProps) {
             >
               <MessageSquare className="mr-2 h-4 w-4" />
               Open Chat
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={(e) => {
+                e.stopPropagation()
+                handleEditTags()
+              }}
+            >
+              Edit Tags
             </DropdownMenuItem>
             <DropdownMenuItem
               onClick={(e) => {

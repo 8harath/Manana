@@ -4,7 +4,7 @@ import { useState, useCallback } from "react"
 import { signOut } from "next-auth/react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { FileText, Upload, Search, User, LogOut, Plus } from "lucide-react"
+import { FileText, Upload, Search, User, LogOut, Plus, Menu } from "lucide-react"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,9 +13,11 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { UploadModal } from "@/components/upload-modal"
-import { DocumentCard } from "@/components/document-card"
-import { useDocuments } from "@/hooks/use-documents"
+import dynamic from 'next/dynamic'
+import Image from 'next/image'
+
+const UploadModal = dynamic(() => import('@/components/upload-modal'), { ssr: false, loading: () => <div>Loading...</div> })
+const DocumentCard = dynamic(() => import('@/components/document-card'), { ssr: false })
 
 interface DashboardProps {
   user: {
@@ -28,6 +30,7 @@ interface DashboardProps {
 export function Dashboard({ user }: DashboardProps) {
   const [searchQuery, setSearchQuery] = useState("")
   const [showUploadModal, setShowUploadModal] = useState(false)
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const { documents, isLoading } = useDocuments()
 
   const filteredDocuments =
@@ -62,40 +65,68 @@ export function Dashboard({ user }: DashboardProps) {
             </div>
           </div>
 
-          {/* User Menu */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="relative h-10 w-10 rounded-full">
-                <Avatar className="h-10 w-10">
-                  <AvatarImage src={user.image || ""} alt={user.name || ""} />
-                  <AvatarFallback>{user.name?.charAt(0) || user.email?.charAt(0) || "U"}</AvatarFallback>
-                </Avatar>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-56" align="end">
-              <div className="flex items-center justify-start gap-2 p-2">
-                <div className="flex flex-col space-y-1 leading-none">
-                  {user.name && <p className="font-medium">{user.name}</p>}
-                  {user.email && <p className="w-[200px] truncate text-sm text-secondary">{user.email}</p>}
+          {/* User Menu (desktop) */}
+          <div className="hidden md:block">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="relative h-10 w-10 rounded-full">
+                  <Avatar className="h-10 w-10">
+                    {user.image ? (
+                      <Image src={user.image} alt={user.name || user.email || 'User'} width={40} height={40} className="rounded-full object-cover" />
+                    ) : (
+                      <AvatarFallback>{user.name?.charAt(0) || user.email?.charAt(0) || "U"}</AvatarFallback>
+                    )}
+                  </Avatar>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-56" align="end">
+                <div className="flex items-center justify-start gap-2 p-2">
+                  <div className="flex flex-col space-y-1 leading-none">
+                    {user.name && <p className="font-medium">{user.name}</p>}
+                    {user.email && <p className="w-[200px] truncate text-sm text-secondary">{user.email}</p>}
+                  </div>
+                </div>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem>
+                  <User className="mr-2 h-4 w-4" />
+                  Profile
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => signOut()}>
+                  <LogOut className="mr-2 h-4 w-4" />
+                  Sign out
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+
+          {/* Hamburger Menu (mobile) */}
+          <div className="md:hidden">
+            <Button variant="ghost" className="h-10 w-10 p-0" onClick={() => setMobileMenuOpen((v) => !v)} aria-label="Open menu">
+              <Menu className="h-6 w-6" />
+            </Button>
+            {mobileMenuOpen && (
+              <div className="absolute right-4 top-16 bg-white border border-light rounded-lg shadow-lg z-50 w-48 animate-fade-in">
+                <div className="flex flex-col p-2">
+                  <span className="font-medium px-2 py-2">{user.name || user.email || "User"}</span>
+                  <Button variant="ghost" className="justify-start px-2 py-2 w-full" onClick={() => { setMobileMenuOpen(false); window.location.href = "/dashboard"; }}>
+                    Dashboard
+                  </Button>
+                  <Button variant="ghost" className="justify-start px-2 py-2 w-full" onClick={() => { setMobileMenuOpen(false); }}>
+                    Profile
+                  </Button>
+                  <Button variant="ghost" className="justify-start px-2 py-2 w-full text-[var(--error-red)]" onClick={() => { setMobileMenuOpen(false); signOut(); }}>
+                    Sign out
+                  </Button>
                 </div>
               </div>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem>
-                <User className="mr-2 h-4 w-4" />
-                Profile
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => signOut()}>
-                <LogOut className="mr-2 h-4 w-4" />
-                Sign out
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+            )}
+          </div>
         </div>
       </header>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main id="main-content" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Page Header */}
         <div className="flex items-center justify-between mb-8">
           <div>
@@ -104,7 +135,7 @@ export function Dashboard({ user }: DashboardProps) {
               {documents?.length || 0} document{documents?.length !== 1 ? "s" : ""} uploaded
             </p>
           </div>
-          <Button onClick={() => setShowUploadModal(true)} className="btn-primary flex items-center space-x-2">
+          <Button onClick={() => setShowUploadModal(true)} className="btn-primary flex items-center space-x-2 focus:ring-2 focus:ring-accent-blue focus:outline-none">
             <Plus className="h-4 w-4" />
             <span>Upload PDF</span>
           </Button>
@@ -150,7 +181,7 @@ export function Dashboard({ user }: DashboardProps) {
                 : "Upload your first PDF to start chatting with your documents."}
             </p>
             {!searchQuery && (
-              <Button onClick={() => setShowUploadModal(true)} className="btn-primary">
+              <Button onClick={() => setShowUploadModal(true)} className="btn-primary focus:ring-2 focus:ring-accent-blue focus:outline-none">
                 <Upload className="h-4 w-4 mr-2" />
                 Upload Your First PDF
               </Button>

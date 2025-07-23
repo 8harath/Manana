@@ -34,6 +34,7 @@ export const pdfUploader = f({
       processingStatus: 'processing',
       url: file.url,
       metadata: {},
+      tags: [], // <-- Add this line
     };
     // Only include _id if it is an ObjectId
     const { _id, ...docToInsert } = document;
