@@ -11,7 +11,7 @@ export const pdfUploader = f({
   pdf: {
     maxFileSize: '8MB', // UploadThing only allows certain values
     maxFileCount: 1,
-    allowedFileTypes: ['application/pdf'],
+    content: ['application/pdf'],
   },
 })
   .middleware(async ({ req }) => {
@@ -38,5 +38,4 @@ export const pdfUploader = f({
 
 export type OurFileRouter = typeof pdfUploader;
 
-const { handler } = pdfUploader;
-export { handler as GET, handler as POST };
+export const { GET, POST } = pdfUploader;
