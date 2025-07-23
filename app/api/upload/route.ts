@@ -1,4 +1,4 @@
-import { createUploadthing, type FileRouter } from 'uploadthing/next';
+import { createUploadthing, createRouteHandler } from 'uploadthing/next';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { MongoClient } from 'mongodb';
@@ -9,9 +9,8 @@ const client = new MongoClient(process.env.MONGODB_URI!);
 
 export const pdfUploader = f({
   pdf: {
-    maxFileSize: '8MB', // UploadThing only allows certain values
+    maxFileSize: '8MB',
     maxFileCount: 1,
-    content: ['application/pdf'],
   },
 })
   .middleware(async ({ req }) => {
@@ -38,4 +37,4 @@ export const pdfUploader = f({
 
 export type OurFileRouter = typeof pdfUploader;
 
-export const { GET, POST } = pdfUploader;
+export const { GET, POST } = createRouteHandler({ router: { pdfUploader } });
