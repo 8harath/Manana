@@ -1,6 +1,7 @@
 import { MongoClient, ObjectId } from "mongodb"
 import pdfParse from 'pdf-parse';
 import Tesseract from 'tesseract.js';
+import { Pinecone } from '@pinecone-database/pinecone';
 
 const client = new MongoClient(process.env.MONGODB_URI!)
 
@@ -83,4 +84,64 @@ export async function processPDF(buffer: Buffer): Promise<string> {
   }
   // Fallback to OCR
   return extractTextWithOCR(buffer);
+}
+
+// --- PDF Chunking Utility ---
+export function chunkText(
+  text: string,
+  chunkSize: number = 500,
+  overlap: number = 50
+): string[] {
+  const words = text.split(/\s+/);
+  const chunks: string[] = [];
+  for (let i = 0; i < words.length; i += chunkSize - overlap) {
+    const chunk = words.slice(i, i + chunkSize).join(' ');
+    if (chunk.trim().length > 0) chunks.push(chunk);
+  }
+  return chunks;
+}
+
+// --- Embedding Utility (Gemini placeholder) ---
+export async function generateEmbedding(text: string): Promise<number[]> {
+  // TODO: Replace with Gemini embedding API call
+  // For now, return a dummy vector
+  return Array(768).fill(0).map((_, i) => Math.sin(i + text.length));
+}
+
+// --- Pinecone Integration ---
+const pinecone = new Pinecone({
+  apiKey: process.env.PINECONE_API_KEY!,
+  environment: process.env.PINECONE_ENVIRONMENT!,
+});
+const index = pinecone.Index(process.env.PINECONE_INDEX!);
+
+export async function upsertDocumentEmbeddings(
+  documentId: string,
+  chunks: string[],
+  userEmail: string
+) {
+  const vectors = await Promise.all(
+    chunks.map(async (chunk, i) => ({
+      id: `${documentId}_${i}`,
+      values: await generateEmbedding(chunk),
+      metadata: { documentId, userEmail, chunkIndex: i, text: chunk },
+    }))
+  );
+  await index.upsert(vectors);
+}
+
+export async function queryRelevantChunks(
+  documentId: string,
+  userEmail: string,
+  query: string,
+  topK: number = 5
+): Promise<string[]> {
+  const queryEmbedding = await generateEmbedding(query);
+  const results = await index.query({
+    vector: queryEmbedding,
+    topK,
+    filter: { documentId, userEmail },
+    includeMetadata: true,
+  });
+  return results.matches?.map((m: any) => m.metadata.text) || [];
 }

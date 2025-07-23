@@ -5,6 +5,7 @@ import { MongoClient, ObjectId } from "mongodb"
 import { generateText } from "ai"
 import { google } from "@ai-sdk/google"
 import type { PDFDocument, ChatSession, ChatMessage } from '@/lib/documents';
+import { queryRelevantChunks } from '@/lib/documents';
 
 const client = new MongoClient(process.env.MONGODB_URI!)
 
@@ -84,22 +85,16 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
       await chatSessions.insertOne(chatSession as any);
     }
 
-    // For now, we'll simulate document content retrieval
-    // In a real implementation, you would:
-    // 1. Use vector search to find relevant chunks
-    // 2. Retrieve the most relevant content from the document
-    const documentContext = `This is a PDF document titled "${document.fileName}". The document contains ${document.metadata?.pageCount || "multiple"} pages of content.`
+    // Retrieve relevant chunks from Pinecone
+    const relevantChunks = await queryRelevantChunks(params.id, session.user.email, message, 5);
+    const contextText = relevantChunks.join('\n---\n');
 
     // Generate AI response using Google Gemini
     const { text } = await generateText({
       model: google("gemini-1.5-flash"),
-      system: `You are a helpful AI assistant that answers questions about PDF documents. 
-      
-      You have access to the following document: ${documentContext}
-      
-      Please provide accurate, helpful responses based on the document content. If you cannot find specific information in the document, say so clearly. Keep responses concise but informative.`,
+      system: `You are a helpful AI assistant that answers questions about PDF documents.\n\nYou have access to the following document context:\n${contextText}\n\nPlease provide accurate, helpful responses based on the document content. If you cannot find specific information in the document, say so clearly. Keep responses concise but informative.`,
       prompt: message,
-    })
+    });
 
     // Save messages to chat session
     const userMessage: ChatMessage = {
