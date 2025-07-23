@@ -50,6 +50,7 @@ const config: Config = {
   			ring: 'hsl(var(--ring))',
   			// Custom app colors for compatibility
   			'accent-blue': 'var(--accent-blue)',
+  			'accent-blue-10': 'rgba(0,122,255,0.1)', // 10% opacity
   			'success-green': 'var(--success-green)',
   			chart: {
   				'1': 'hsl(var(--chart-1))',
