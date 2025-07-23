@@ -1,4 +1,6 @@
 import { MongoClient, ObjectId } from "mongodb"
+import pdfParse from 'pdf-parse';
+import Tesseract from 'tesseract.js';
 
 const client = new MongoClient(process.env.MONGODB_URI!)
 
@@ -57,4 +59,28 @@ export async function getDocument(id: string, userEmail: string) {
   } finally {
     await client.close()
   }
+}
+
+export async function extractTextFromPDF(buffer: Buffer): Promise<string> {
+  const data = await pdfParse(buffer);
+  return data.text;
+}
+
+export async function extractTextWithOCR(buffer: Buffer): Promise<string> {
+  // Convert buffer to base64 for Tesseract.js
+  const base64 = buffer.toString('base64');
+  const image = `data:application/pdf;base64,${base64}`;
+  const { data } = await Tesseract.recognize(image, 'eng');
+  return data.text;
+}
+
+export async function processPDF(buffer: Buffer): Promise<string> {
+  try {
+    const text = await extractTextFromPDF(buffer);
+    if (text && text.trim().length > 0) return text;
+  } catch (err) {
+    // Ignore and fallback to OCR
+  }
+  // Fallback to OCR
+  return extractTextWithOCR(buffer);
 }
