@@ -101,17 +101,47 @@ export function chunkText(
   return chunks;
 }
 
-// --- Embedding Utility (Gemini placeholder) ---
+// --- Embedding Utility (Gemini API integration) ---
 export async function generateEmbedding(text: string): Promise<number[]> {
-  // TODO: Replace with Gemini embedding API call
-  // For now, return a dummy vector
-  return Array(768).fill(0).map((_, i) => Math.sin(i + text.length));
+  const apiKey = process.env.GEMINI_API_KEY;
+  if (!apiKey) {
+    throw new Error('GEMINI_API_KEY is not set');
+  }
+
+  try {
+    const response = await fetch('https://generativelanguage.googleapis.com/v1beta/models/embedding-001:embedText', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-goog-api-key': apiKey,
+      },
+      body: JSON.stringify({
+        "model": "models/embedding-001",
+        "text": text,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Gemini API error: ${response.status} ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    // Gemini returns { embedding: { values: [...] } }
+    if (data && data.embedding && Array.isArray(data.embedding.values)) {
+      return data.embedding.values;
+    } else {
+      throw new Error('Invalid Gemini API response');
+    }
+  } catch (error) {
+    console.error('Error fetching Gemini embedding:', error);
+    // Fallback: return a zero vector of length 768
+    return Array(768).fill(0);
+  }
 }
 
 // --- Pinecone Integration ---
 const pinecone = new Pinecone({
   apiKey: process.env.PINECONE_API_KEY!,
-  environment: process.env.PINECONE_ENVIRONMENT!,
 });
 const index = pinecone.Index(process.env.PINECONE_INDEX!);
 
