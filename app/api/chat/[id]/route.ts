@@ -4,6 +4,7 @@ import { authOptions } from "@/lib/auth"
 import { MongoClient, ObjectId } from "mongodb"
 import { generateText } from "ai"
 import { google } from "@ai-sdk/google"
+import type { PDFDocument, ChatSession, ChatMessage } from '@/lib/documents';
 
 const client = new MongoClient(process.env.MONGODB_URI!)
 
@@ -58,7 +59,7 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
     const document = await documents.findOne({
       _id: new ObjectId(params.id),
       userEmail: session.user.email,
-    })
+    }) as PDFDocument | null;
 
     if (!document) {
       return NextResponse.json({ error: "Document not found" }, { status: 404 })
@@ -68,19 +69,19 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
     let chatSession = await chatSessions.findOne({
       pdfId: new ObjectId(params.id),
       userId: session.user.email,
-    })
+    }) as ChatSession | null;
 
     if (!chatSession) {
       chatSession = {
-        _id: new ObjectId(),
-        pdfId: new ObjectId(params.id),
+        _id: new ObjectId().toHexString(),
+        pdfId: params.id,
         userId: session.user.email,
         title: message.slice(0, 50) + (message.length > 50 ? "..." : ""),
         createdAt: new Date(),
         lastMessageAt: new Date(),
         messages: [],
-      }
-      await chatSessions.insertOne(chatSession)
+      };
+      await chatSessions.insertOne(chatSession as any);
     }
 
     // For now, we'll simulate document content retrieval
@@ -101,14 +102,14 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
     })
 
     // Save messages to chat session
-    const userMessage = {
+    const userMessage: ChatMessage = {
       id: Date.now().toString(),
       type: "user",
       content: message,
       timestamp: new Date(),
     }
 
-    const assistantMessage = {
+    const assistantMessage: ChatMessage = {
       id: (Date.now() + 1).toString(),
       type: "assistant",
       content: text,
@@ -120,7 +121,7 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
     }
 
     await chatSessions.updateOne(
-      { _id: chatSession._id },
+      { _id: (chatSession as any)._id ? new ObjectId((chatSession as any)._id) : undefined },
       {
         $push: {
           messages: { $each: [userMessage, assistantMessage] },

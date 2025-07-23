@@ -2,6 +2,7 @@ import { createUploadthing, createRouteHandler } from 'uploadthing/next';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { MongoClient } from 'mongodb';
+import type { PDFDocument } from '@/lib/documents';
 
 const f = createUploadthing();
 
@@ -22,7 +23,7 @@ export const pdfUploader = f({
     await client.connect();
     const db = client.db('pdf-chat');
     const documents = db.collection('documents');
-    await documents.insertOne({
+    const document: PDFDocument = {
       userEmail: metadata.userEmail,
       fileName: file.name,
       fileSize: file.size,
@@ -31,7 +32,8 @@ export const pdfUploader = f({
       processingStatus: 'processing',
       url: file.url,
       metadata: {},
-    });
+    };
+    await documents.insertOne(document);
     await client.close();
   });
 
