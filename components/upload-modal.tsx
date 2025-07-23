@@ -139,8 +139,8 @@ export function UploadModal({ isOpen, onClose, onSuccess }: UploadModalProps) {
               {...getRootProps()}
               className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors ${
                 isDragActive
-                  ? "border-[var(--accent-blue)] bg-[var(--accent-blue)]/5"
-                  : "border-light hover:border-[var(--accent-blue)]/50"
+                  ? "border-accent-blue bg-blue-50"
+                  : "border-light hover:border-blue-300"
               }`}
             >
               <input {...getInputProps()} />
