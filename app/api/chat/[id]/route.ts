@@ -72,6 +72,7 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
 
     if (!chatSession) {
       chatSession = {
+        _id: new ObjectId(),
         pdfId: new ObjectId(params.id),
         userId: session.user.email,
         title: message.slice(0, 50) + (message.length > 50 ? "..." : ""),
@@ -122,14 +123,12 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
       { _id: chatSession._id },
       {
         $push: {
-          messages: {
-            $each: [userMessage, assistantMessage],
-          },
+          messages: { $each: [userMessage, assistantMessage] },
         },
         $set: {
           lastMessageAt: new Date(),
         },
-      },
+      } as any,
     )
 
     // Update document last accessed
