@@ -97,8 +97,8 @@ export function ChatInterface({ document, user }: ChatInterfaceProps) {
           </Button>
 
           <div className="flex items-center space-x-3 flex-1 min-w-0">
-            <div className="w-8 h-8 bg-[var(--accent-blue)]/10 rounded-lg flex items-center justify-center shrink-0">
-              <FileText className="h-4 w-4 text-[var(--accent-blue)]" />
+            <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center shrink-0">
+              <FileText className="h-4 w-4 text-accent-blue" />
             </div>
             <div className="min-w-0 flex-1">
               <h1 className="font-medium text-sm truncate">{document.fileName}</h1>
@@ -120,8 +120,8 @@ export function ChatInterface({ document, user }: ChatInterfaceProps) {
           <div className="max-w-4xl mx-auto py-6 space-y-6">
             {messages.length === 0 && !isLoading && (
               <div className="text-center py-12">
-                <div className="w-16 h-16 bg-[var(--accent-blue)]/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                  <FileText className="h-8 w-8 text-[var(--accent-blue)]" />
+                <div className="w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                  <FileText className="h-8 w-8 text-accent-blue" />
                 </div>
                 <h3 className="text-lg font-semibold mb-2">Start a conversation</h3>
                 <p className="text-secondary max-w-md mx-auto mb-6">
