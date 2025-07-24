@@ -6,12 +6,11 @@
       "use": "@vercel/next"
     }
   ],
-  "regions": ["iad1"],
   "env": {
-    "MONGODB_URI": "@mongodb_uri",
-    "GOOGLE_CLIENT_ID": "@google_client_id", 
-    "GOOGLE_CLIENT_SECRET": "@google_client_secret",
-    "NEXTAUTH_SECRET": "@nextauth_secret",
-    "NEXTAUTH_URL": "@nextauth_url"
+    "MONGODB_URI": "mongodb+srv://8harathk:BHARATH888@cluster0.yfphmw2.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0",
+    "GOOGLE_CLIENT_ID": "422515724372-u83g28h5htqqnrt3t1vmkgmbvt6np5qq.apps.googleusercontent.com",
+    "GOOGLE_CLIENT_SECRET": "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",
+    "NEXTAUTH_URL": "https://8harath.tech",
+    "NEXTAUTH_SECRET": "bXVzaWNtYWpvcnN3dW5ncnViYmVyZHJlc3NjcmVhbXRoaXJkdGhhdGNoYW5nZXdyYXA="
   }
 }
