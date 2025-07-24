@@ -8,7 +8,10 @@
     "lint": "next lint",
     "start": "next start",
     "type-check": "tsc --noEmit",
-    "build:production": "next lint && pnpm type-check && next build"
+    "build:production": "next lint && pnpm type-check && next build",
+    "test": "jest --passWithNoTests",
+    "test:watch": "jest --watch",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
     "@ai-sdk/google": "latest",
@@ -83,16 +86,26 @@
     "zod": "^3.24.1"
   },
   "devDependencies": {
+    "@playwright/test": "^1.54.1",
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.3.0",
+    "@testing-library/user-event": "^14.6.1",
+    "@types/jest": "^30.0.0",
     "@types/node": "^22",
     "@types/node-fetch": "^2.6.12",
     "@types/pdf-parse": "^1.1.5",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@types/tesseract.js": "^2.0.0",
+    "@types/testing-library__jest-dom": "^6.0.0",
     "eslint": "^9.31.0",
     "eslint-config-next": "15.4.3",
+    "jest": "^30.0.5",
+    "jest-environment-jsdom": "^30.0.5",
+    "playwright": "^1.54.1",
     "postcss": "^8.5",
     "tailwindcss": "^3.4.17",
+    "ts-jest": "^29.4.0",
     "typescript": "^5"
   }
 }

@@ -105,3 +105,35 @@ pnpm start
 - Node.js 18+ 
 - All environment variables must be set
 - MongoDB connection must be accessible from Vercel's servers
+
+## 🧪 Testing
+
+### Unit & Integration Tests
+
+Run all Jest tests:
+
+```bash
+pnpm test
+```
+
+Run in watch mode:
+
+```bash
+pnpm test:watch
+```
+
+### End-to-End (E2E) Tests
+
+Run all Playwright tests:
+
+```bash
+pnpm test:e2e
+```
+
+---
+
+## 🚀 Deployment Readiness
+
+- Ensure all environment variables are set (see above)
+- Run `pnpm lint`, `pnpm type-check`, and all tests before deploying
+- See DEPLOYMENT.md for Vercel-specific steps
